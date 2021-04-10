@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import path from "path";
 
 //db config
 import connectDB from "./db/db.js";
@@ -95,6 +96,16 @@ const searchData = async (name) => {
 app.post("/api/search/:name", (req, res) => {
   searchData(req.params.name);
 });
+
+const __dirname = path.resolve();
+
+if (process.env.NODE_ENV === "PRODUCTION") {
+  app.use(express.static(path.join(__dirname, "/frontend/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "build", "index.html"));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`Server is running on ${PORT}`);
